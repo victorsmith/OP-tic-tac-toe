@@ -52,6 +52,10 @@ const Controller = (() => {
         else { return false }
     }
 
+    function newGame() {
+
+    }
+
     // Display Game Board
     function writeSymbol (index) {
         if ( gameArray[index] == 'x' || gameArray[index] == 'o') { 
@@ -62,8 +66,7 @@ const Controller = (() => {
             if ( currentTurn % 2 == 0)  {
                 console.log('p1 turn')
                 GameBoard.gameArray[index] = player1.token
-            } 
-            else {
+            } else {
                 console.log('p2 turn')
                 GameBoard.gameArray[index] = player2.token    
             }   
@@ -79,9 +82,18 @@ const Controller = (() => {
                 console.log("Win");                        
                 finished = true;
             }
+
             // Resets gameboard
             if (finished) {
                 // do something smart here
+                GameBoard.gameArray =  ['','','','','','','','','']
+                win = false;
+                finished = false;
+                currentTurn = 0;
+                updateGameBoard();
+                console.log(win)
+                console.log(finished)
+                console.log(currentTurn)
             } else {
                 updateGameBoard();
             }
