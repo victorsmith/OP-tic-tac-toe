@@ -1,74 +1,106 @@
+const PlayerFactory = (token) => {
+    return {token};
+}
 
-    const gameboard = (() => {
-        // stuff here
-        const gameArray = [0,0,0,0,0,0,0,0,0];
-        
-        
-        const getGameArray = () => {
-            return gameArray;
-        }
-        
-        const setArray = (index, symbol) => {
-            gameArray[index] = symbol;
-        }
-        
-        // restarts game
-        const resetGameArray = () => {
-            gameArray = [0,0,0,0,0,0,0,0,0];
-        }
-        
-        return {getGameArray, setArray, resetGameArray};
+const GameBoard = (() => {
+    gameArray = ['','','','','','','','',''];
+
+    return {gameArray}
 })();
-    
-    
-const PlayerFactory = (symbol) => {
-    // player content
-    const assignedSymbol = symbol;
 
-    const getAssignedSymbol = () => {
-        return assignedSymbol;
+const Controller = (() => {
+    let player1 = PlayerFactory('x');
+    let player2 = PlayerFactory('o');
+    
+    let win = false
+    let finished = false;
+    let currentTurn = 0;
+    
+    // Mode key: true = PvP | false = PvAI   => Implement Later
+    let mode = false;
+
+    const changeModeButton = document.getElementById('change-mode-btn');
+    const changeMode = () => { 
+        mode = !mode; 
+    };
+
+    changeModeButton.addEventListener('click', changeMode);
+
+    // implement in a more elegant way
+    function updateGameBoard () {
+        const board = document.getElementById('gameboard');
+        board.innerHTML = '';
+        
+        for (let index = 0; index < GameBoard.gameArray.length; index++) {
+            const newButton = document.createElement('button');
+            newButton.textContent = GameBoard.gameArray[index];
+            newButton.classList.add('grid-button');
+            newButton.addEventListener("click", function() { writeSymbol(index) });
+            board.appendChild(newButton);
+        }
     }
-    
-    return {getAssignedSymbol};
-};
-    
-const controller = (() => {
-    
-    // Game modes: 0: P1 vs P2 | 1 = P1 vs AI
-    const gameMode = 0; 
-    let turn = 0;
-    
-    const player1 = PlayerFactory('X')
-    const player2 = PlayerFactory('0')
-    
-    console.log(player1.symbol);
-    
-    const gameBoard = document.getElementById('gameboard');
-    const gameArray = gameboard.getGameArray();
-    
-    console.log(gameArray)
 
-    const toggleBlock = ( (index) => {
-        console.log(index)
-        if (turn % 2 == 0) {
-            // gameBoard.setArray(index, player2.getAssignedSymbol())
+    function checkWin () {
+        if ( gameArray[0] == gameArray[1] && gameArray[1] ==  gameArray[2] && gameArray[0] != '') { return true }
+        else if ( gameArray[0] == gameArray[3] && gameArray[3] ==  gameArray[6] && gameArray[0] != '') { return true }
+        else if ( gameArray[0] == gameArray[4] && gameArray[4] ==  gameArray[8] && gameArray[0] != '') { return true }
+        else if ( gameArray[1] == gameArray[4] && gameArray[4] ==  gameArray[7] && gameArray[1] != '') { return true }
+        else if ( gameArray[2] == gameArray[4] && gameArray[4] ==  gameArray[6] && gameArray[2] != '') { return true }
+        else if ( gameArray[2] == gameArray[5] && gameArray[5] ==  gameArray[8] && gameArray[2] != '') { return true }
+        else if ( gameArray[3] == gameArray[4] && gameArray[4] ==  gameArray[5] && gameArray[3] != '') { return true }
+        else if ( gameArray[6] == gameArray[7] && gameArray[7] ==  gameArray[8] && gameArray[6] != '') { return true }
+        else { return false }
+    }
+
+    // Display Game Board
+    function writeSymbol (index) {
+        if ( gameArray[index] == 'x' || gameArray[index] == 'o') { 
+            // exits out of function if the gameArray already contains a token
+            return 
         } else {
-            // gameBoard.setArray(index, player1.getAssignedSymbol())
+            // change who's turn it is after the writing of a players token
+            if ( currentTurn % 2 == 0)  {
+                console.log('p1 turn')
+                GameBoard.gameArray[index] = player1.token
+            } 
+            else {
+                console.log('p2 turn')
+                GameBoard.gameArray[index] = player2.token    
+            }   
+
+            currentTurn++;
+            win = checkWin();
+
+            if ( currentTurn == 9 ) {
+                console.log('Done');
+                finished = true;
+            }
+            else if ( win ) {
+                console.log("Win");                        
+                finished = true;
+            }
+            // Resets gameboard
+            if (finished) {
+                // do something smart here
+            } else {
+                updateGameBoard();
+            }
         }
-        turn++;
-    } ) ();
     
-    const displayGameBoard = ( () => {
-        console.log("working")
-        for (let x=0; x<gameArray.length; x++) {
-            const gridButton = `                
-                <div class="wrapper">
-                    <button class="game-block" onclick="toggleBlock(${x})">
-                    </button>
-                </div>`
-            gameBoard.insertAdjacentHTML("beforeend", gridButton);
+    }
+
+    const displayGameBoard = (() => {
+        const board = document.getElementById('gameboard');
+        
+        for (let index = 0; index < GameBoard.gameArray.length; index++) {
+            const newButton = document.createElement('button');
+            newButton.textContent = GameBoard.gameArray[index];
+            newButton.classList.add('grid-button');
+
+            newButton.addEventListener("click", function() { writeSymbol(index) });
+            board.appendChild(newButton);
         }
-    })();
+    } )();
 
 
 })();
